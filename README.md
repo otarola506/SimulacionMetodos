@@ -1,2 +1,5 @@
-# SimulacionM-todos
-Proyecto de Simulación Métodos de Modelado y Optimización
+#Proyecto de Simulación CI0130 Métodos de Modelado y Optimización
+Universidad de Costa Rica
+Silvio Salazar 
+Gerald Bermúdez
+Sebastián Otárola
