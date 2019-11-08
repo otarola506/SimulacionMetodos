@@ -1,4 +1,3 @@
-import Globales
 
 class Llamada:
     def __init__(self, inicio = -1, tipo = -1, origen = -1):
