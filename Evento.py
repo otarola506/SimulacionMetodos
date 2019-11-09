@@ -26,7 +26,6 @@ class Evento:
 
 
     def iniciar(self):
-        print("Inicio: " + str(self.inicio))
         if self.tipo == 1: # E1: Llega llamada externa a  A 
             self.evento1()
 
@@ -37,26 +36,26 @@ class Evento:
             self.evento4()
 
     def evento1(self):
-        print("Arriba llamada a A")
+        print("Llega llamada externa a A    Inicio: " + str(self.inicio))
         self.simulacion.reloj = self.inicio
         llamada = Llamada(self.simulacion.reloj, origen = 0)
-        rand = random.randint(0, 9)
 
+        rand = random.randint(0, 9)
         if rand < 2:
             llamada.tipo = 1
         else:
             llamada.tipo = 2
         
         if self.simulacion.ocupado_A == True:
-            if self.simulacion.cola_A.qsize() == 5:
+            if self.simulacion.cola_A.size == 5:
                 llamada.origen = 1
-                if self.cola_eventos.exists(3):
+                if self.simulacion.cola_eventos.exists(3):
                     e3 = Evento(3, self.simulacion.reloj + 0.5, llamada, simulacion = self.simulacion)
                     self.simulacion.cola_eventos.push(e3)
                 else:
-                    self.simulacion.cola_A_B.put_nowait(llamada)
+                    self.simulacion.cola_A_B.push(llamada)
             else:
-                self.simulacion.cola_A.put_nowait(llamada)
+                self.simulacion.cola_A.push(llamada)
         else:
             self.simulacion.ocupado_A = True
             if llamada.tipo == 1:
@@ -67,17 +66,31 @@ class Evento:
             self.simulacion.cola_eventos.push(e4)
         
         tiempo_entre_arribos = self.TEntreArribosA()
-        e1 = Evento(1, self.simulacion.reloj + tiempo_entre_arribos)
+        e1 = Evento(1, self.simulacion.reloj + tiempo_entre_arribos, simulacion = self.simulacion)
+        self.simulacion.cola_eventos.push(e1)
 
     def evento2(self):
-        cola_A = self.simulacion.cola_A
-        # Aqui ya termina llamada
-        llamada = cola_A.get_nowait()
-        print(llamada)
+        print("Llega llamada externa a B    Inicio: " + str(self.inicio))
+        self.simulacion.reloj = self.inicio
+        llamada = Llamada(self.simulacion.reloj, 2, 0)
+
+        if self.simulacion.ocupado_B:
+            self.cola_B.ultima_modificacion = self.simulacion.reloj
+            self.cola_B.push(llamada)
+        else:
+            self.ocupado_B = True
+            tiempo_atencion = self.TAtencionB2()
+            e5 = Evento(5, self.simulacion.reloj + tiempo_atencion, llamada)
+            self.simulacion.cola_eventos.push(e5)
+
+        tiempo_entre_arribos = self.TEntreArribosB()
+        e2 = Evento(2, self.simulacion.reloj + tiempo_entre_arribos, simulacion = self.simulacion)
+        self.simulacion.cola_eventos.push(e2)
 
     def evento4(self):
-        self.simulacion.reloj = self.inicio
-        print("Termina de atenderse llamada")
+        self.simulacion.reloj = self.inicio   
+        print("Termina de atenderse llamada en A")
+        self.simulacion.ocupado_A = False
     
     def TAtencionA1(self):
         r = random.random()
@@ -94,4 +107,17 @@ class Evento:
     def TEntreArribosA(self):
         r = random.random()
         x = - math.log(1 - r) / (2 / 3)
+
+        return x
+
+    def TAtencionB2(self):
+        r = random.random()
+        x = - math.log(1 - r) / (4 / 3)
+
+        return x
+    
+    def TEntreArribosB(self):
+        r = random.random()
+        x = 2 * r + 1
+
         return x
