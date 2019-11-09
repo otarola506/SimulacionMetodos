@@ -1,8 +1,8 @@
+# UNA CLASE EQUIVALENTE ESTA CLASE ESTA DECLARADA EN Simulacion.py o sea que esta no se usa
 import random
 import math
 from Llamada import Llamada
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 @dataclass(order = True)
 class Evento:
