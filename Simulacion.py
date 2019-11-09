@@ -57,14 +57,23 @@ class Evento:
 
         if self.tipo == 2: # E2: Llega llamada externa a  B
             self.evento2()
+        
+        if self.tipo == 3: # E3: Llega llamada de A a B.
+            self.evento3()
 
         if self.tipo == 4: # E4: Termina de atender llamada en A
             self.evento4()
+
+        if self.tipo == 5: # E5: Termina de atender llamada en B
+            self.evento5()
+    
+
 
     def evento1(self):
         print("Llega llamada externa a A    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, origen = 0)
+        #Simulacion.cantLlamadasA += 1
 
         rand = random.randint(0, 9)
         if rand < 2:
@@ -77,7 +86,8 @@ class Evento:
                 llamada.origen = 1
                 if Simulacion.cola_eventos.exists(3):
                     e3 = Evento(3, Simulacion.reloj + 0.5, llamada)
-                    Simulacion.cola_eventos.push(e3)
+                    Simulacion.cola_eventos.push(e3) 
+                    #Simulacion.cantLlamadasDesviadasA += 1
                 else:
                     Simulacion.cola_A_B.push(llamada)
             else:
@@ -99,8 +109,10 @@ class Evento:
         print("Llega llamada externa a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, 2, 0)
-
+        #Simulacion.cantLlamadasB += 1
+        #Simulacion.cantLlamadasLocalesB += 1
         if Simulacion.ocupado_B:
+            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B )
             self.cola_B.ultima_modificacion = Simulacion.reloj
             self.cola_B.push(llamada)
         else:
@@ -113,11 +125,76 @@ class Evento:
         e2 = Evento(2, Simulacion.reloj + tiempo_entre_arribos)
         Simulacion.cola_eventos.push(e2)
 
+    def evento3(self):
+        print("Llega llamada de A a B    Inicio: " + str(self.inicio))
+        Simulacion.reloj = self.inicio
+        if Simulacion.ocupado_B:
+            self.cola_B.ultima_modificacion = Simulacion.reloj
+            self.cola_B.push(self.llamada)
+        else:
+            Simulacion.ocupado_B = True
+            if self.llamada.tipo == 1:
+                tiempo_atencion = self.TAtencionB1() # todavía no definimos esta funcion
+            else:
+                tiempo_atencion = self.TAtencionB2()
+            e5=Evento(5,Simulacion.reloj + tiempo_atencion,self.llamada)
+            Simulacion.cola_eventos.push(e5)
+        if Simulacion.cola_A_B.size > 0:
+            llamada = Simulacion.cola_A_B.pop()
+            inicio = llamada.inicio + 0.5
+            e3 = Evento(3,inicio,llamada)
+            Simulacion.cola_eventos.push(e3)
+           
+
+
     def evento4(self):
-        Simulacion.reloj = self.inicio   
         print("Termina de atenderse llamada en A")
+        Simulacion.reloj = self.inicio   
         Simulacion.ocupado_A = False
-    
+        if Simulacion.cola_A.size > 0:
+            llamada = Simulacion.cola_A.pop()
+            Simulacion.ocupado_A=True
+            if llamada.tipo == 1:
+                tiempo_atencion = self.TAtencionA1()
+            else:
+                tiempo_atencion = self.TAtencionA2()
+            inicio = Simulacion.reloj + tiempo_atencion
+            e4 = Evento(4,inicio,llamada)
+
+
+    def evento5(self):
+        print("Termina de atenderse llamada en B")
+        Simulacion.reloj = self.inicio
+        Simulacion.ocupado_B = False
+        if self.llamada.origen == 0:
+            pass
+            #Estadistica
+            #++CantLLamadasB_B
+            #DuracionTotalLlamdadB_B
+        else:
+            pass
+            #Estadistica
+            #++CantLLamadasA_B
+            #DuracionTotalLlamdadA_B
+        if Simulacion.cola_B.size > 4:
+            if self.llamada.tipo == 2:
+                rand = random.randint(0,9)
+                if rand == 0:
+                    pass
+                    #Estadistica
+                    #++CantLlamadasPerdidasB
+        if Simulacion.cola_B.size > 0:
+            #TamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
+            #Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
+            llamada = Simulacion.cola_B.pop()
+            if llamada.tipo == 1:
+                tiempo_atencion = self.TAtencionB1()
+            else:
+                tiempo_atencion = self.TAtencionB2()
+            inicio = Simulacion.reloj + tiempo_atencion
+            e5 = Evento(5,inicio,llamada)
+
+
     def TAtencionA1(self):
         r = random.random()
         x = 10 * (5 * r + 4) ** 1 / 2
@@ -131,15 +208,26 @@ class Evento:
         return 1 * z + 15
 
     def TEntreArribosA(self):
-        r = random.random()
+        esUno=True
+        while esUno:
+            r = random.random()
+            if r != 1:
+                esUno = False
         x = - math.log(1 - r) / (2 / 3)
-
         return x
 
+    def TAtencionB1(self):
+        x=1
+        #Todavía no estamos seguros de esta formula 
+        return x
+        
     def TAtencionB2(self):
-        r = random.random()
-        x = - math.log(1 - r) / (4 / 3)
-
+        esUno=True
+        while esUno:
+            r = random.random()
+            if r != 1:
+                esUno = False
+         x = - math.log(1 - r) / (4 / 3)
         return x
     
     def TEntreArribosB(self):
