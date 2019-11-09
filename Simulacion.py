@@ -137,12 +137,12 @@ class Evento:
                 tiempo_atencion = self.TAtencionB1() # todavía no definimos esta funcion
             else:
                 tiempo_atencion = self.TAtencionB2()
-            e5=Evento(5,Simulacion.reloj + tiempo_atencion,self.llamada)
+            e5 = Evento(5, Simulacion.reloj + tiempo_atencion, self.llamada)
             Simulacion.cola_eventos.push(e5)
         if Simulacion.cola_A_B.size > 0:
             llamada = Simulacion.cola_A_B.pop()
             inicio = llamada.inicio + 0.5
-            e3 = Evento(3,inicio,llamada)
+            e3 = Evento(3, inicio, llamada)
             Simulacion.cola_eventos.push(e3)
            
 
@@ -159,7 +159,7 @@ class Evento:
             else:
                 tiempo_atencion = self.TAtencionA2()
             inicio = Simulacion.reloj + tiempo_atencion
-            e4 = Evento(4,inicio,llamada)
+            e4 = Evento(4, inicio, llamada)
 
 
     def evento5(self):
@@ -178,7 +178,7 @@ class Evento:
             #DuracionTotalLlamdadA_B
         if Simulacion.cola_B.size > 4:
             if self.llamada.tipo == 2:
-                rand = random.randint(0,9)
+                rand = random.randint(0, 9)
                 if rand == 0:
                     pass
                     #Estadistica
@@ -192,7 +192,7 @@ class Evento:
             else:
                 tiempo_atencion = self.TAtencionB2()
             inicio = Simulacion.reloj + tiempo_atencion
-            e5 = Evento(5,inicio,llamada)
+            e5 = Evento(5, inicio, llamada)
 
 
     def TAtencionA1(self):
