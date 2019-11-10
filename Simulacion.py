@@ -306,10 +306,17 @@ class Evento:
 
     def TAtencionA2(self):
         z = 0.0
-        for i in range(0, 11):
-            z += random.random()
-        z -= 6.0
-        return 1 * z + 15
+        esNegativo=True
+        while esNegativo:
+            for i in range(0, 11):
+                z += random.random()
+            z -= 6.0
+            x = 1 * z + 15
+            if x >= 0:
+                esNegativo = False
+        return x
+             
+
 
     def TEntreArribosA(self):
         esUno=True
