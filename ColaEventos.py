@@ -1,5 +1,4 @@
 import queue
-from Evento import Evento
 
 class ColaEventos:
     def __init__(self):

@@ -15,7 +15,7 @@ class Simulacion:
     ocupado_A = False
     ocupado_B = False
     reloj = 0
-    max_time = 100
+    max_time = 1000
 
     @classmethod
     def iniciar(cls):
@@ -84,7 +84,7 @@ class Evento:
         if Simulacion.ocupado_A == True:
             if Simulacion.cola_A.size == 5:
                 llamada.origen = 1
-                if Simulacion.cola_eventos.exists(3):
+                if Simulacion.cola_eventos.exists(3) == False:
                     e3 = Evento(3, Simulacion.reloj + 0.5, llamada)
                     Simulacion.cola_eventos.push(e3) 
                     #Simulacion.cantLlamadasDesviadasA += 1
@@ -112,9 +112,9 @@ class Evento:
         #Simulacion.cantLlamadasB += 1
         #Simulacion.cantLlamadasLocalesB += 1
         if Simulacion.ocupado_B:
-            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B )
-            self.cola_B.ultima_modificacion = Simulacion.reloj
-            self.cola_B.push(llamada)
+            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultimaModificacion) * Simulacion.cola_B.size
+            Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
+            Simulacion.cola_B.push(llamada)
         else:
             self.ocupado_B = True
             tiempo_atencion = self.TAtencionB2()
@@ -128,13 +128,15 @@ class Evento:
     def evento3(self):
         print("Llega llamada de A a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
+        #Simulacion.cantLlamadasB += 1
         if Simulacion.ocupado_B:
-            self.cola_B.ultima_modificacion = Simulacion.reloj
-            self.cola_B.push(self.llamada)
+            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultimaModificacion) * Simulacion.cola_B.size
+            Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
+            Simulacion.cola_B.push(self.llamada)
         else:
             Simulacion.ocupado_B = True
             if self.llamada.tipo == 1:
-                tiempo_atencion = self.TAtencionB1() # todavía no definimos esta funcion
+                tiempo_atencion = self.TAtencionB1() 
             else:
                 tiempo_atencion = self.TAtencionB2()
             e5 = Evento(5, Simulacion.reloj + tiempo_atencion, self.llamada)
@@ -144,47 +146,62 @@ class Evento:
             inicio = llamada.inicio + 0.5
             e3 = Evento(3, inicio, llamada)
             Simulacion.cola_eventos.push(e3)
-           
 
 
     def evento4(self):
         print("Termina de atenderse llamada en A")
         Simulacion.reloj = self.inicio   
         Simulacion.ocupado_A = False
+        #Simulacion.cantLlamadasA_A += 1
+        #Simulacion.duracionSistema = Simulacion.reloj - self.llamada.inicio
+        #Simulacion.duracionTotalLlamadasA_A += Simulacion.duracionSistema
+        #Simulacion.tiempoEnColaA_A = Simulacion.reloj - self.llamada.inicio
+        #Simulacion.tiempoEnColaTotalA_A += Simulacion.tiempoEnColaA_A
+        if self.llamada.tipo == 2 :
+            pass
+            #Simulacion.cantLlamadasLocalesRuteadas += 1
+            
         if Simulacion.cola_A.size > 0:
             llamada = Simulacion.cola_A.pop()
-            Simulacion.ocupado_A=True
+            Simulacion.ocupado_A = True
             if llamada.tipo == 1:
                 tiempo_atencion = self.TAtencionA1()
             else:
                 tiempo_atencion = self.TAtencionA2()
             inicio = Simulacion.reloj + tiempo_atencion
             e4 = Evento(4, inicio, llamada)
+            Simulacion.cola_eventos.push(e4)
 
 
     def evento5(self):
         print("Termina de atenderse llamada en B")
         Simulacion.reloj = self.inicio
         Simulacion.ocupado_B = False
+        #Simulacion.duracionSistema = Simulacion.reloj - self.llamada.inicio
         if self.llamada.origen == 0:
             pass
-            #Estadistica
-            #++CantLLamadasB_B
-            #DuracionTotalLlamdadB_B
+            #Simulacion.cantLLamadasB_B += 1
+            #Simulacion.duracionTotalLlamadasB_B += Simulacion.duracionSistema 
+            #Simulacion.tiempoEnColaB_B = Simulacion.reloj - self.llamada.inicio
+            #Simulacion.tiempoEnColaTotalB_B += Simulacion.tiempoEnColaB_B
         else:
             pass
-            #Estadistica
-            #++CantLLamadasA_B
-            #DuracionTotalLlamdadA_B
+            #Simulacion.cantLLamadasA_B += 1
+            #Simulacion.duracionTotalLlamadasA_B += Simulacion.duracionSistema
+            #Simulacion.tiempoEnColaA_B = Simulacion.reloj - self.llamada.inicio
+            #Simulacion.tiempoEnColaTotalA_B += Simulacion.tiempoEnColaA_B
         if Simulacion.cola_B.size > 4:
             if self.llamada.tipo == 2:
+                #Simulacion.cantLlamadasLocalesB += 1 ***SE DEBE DE HABLAR PORQUE LA PROFE LO CORRIGIO**** creo que se debe eliminar
                 rand = random.randint(0, 9)
                 if rand == 0:
                     pass
-                    #Estadistica
-                    #++CantLlamadasPerdidasB
+                    #Simulacion.cantLlamadasPerdidasB += 1
+                else:
+                    pass
+                    #Simulacion.cantLlamadasLocalesRuteadas += 1
         if Simulacion.cola_B.size > 0:
-            #TamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
+            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
             #Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
             llamada = Simulacion.cola_B.pop()
             if llamada.tipo == 1:
@@ -217,8 +234,11 @@ class Evento:
         return x
 
     def TAtencionB1(self):
-        x=1
-        #Todavía no estamos seguros de esta formula 
+        r = random.random()
+        if r <= 0.5:
+            x = 2 * r
+        else:
+            x = 3 - 2 * math.sqrt(2- 2 * r)
         return x
         
     def TAtencionB2(self):
@@ -227,12 +247,12 @@ class Evento:
             r = random.random()
             if r != 1:
                 esUno = False
-         x = - math.log(1 - r) / (4 / 3)
+        x = - math.log(1 - r) / (4 / 3)
         return x
     
     def TEntreArribosB(self):
         r = random.random()
-        x = 2 * r + 1
+        x = 2 *  r + 1
 
         return x
 
