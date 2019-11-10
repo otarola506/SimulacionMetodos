@@ -15,8 +15,7 @@ class Simulacion:
     ocupado_A = False
     ocupado_B = False
     reloj = 0
-    max_time = 1000
-    #Variables para las Estadisticas
+    #Variables para las Estadisticas 
     cantLlamadasA = 0  
     cantLlamadasDesviadasA = 0 
     cantLlamadasB = 0 
@@ -32,6 +31,7 @@ class Simulacion:
     duracionTotalLlamadasA_B = 0 
     tiempoEnColaTotalA_B = 0 
     cantLlamadasPerdidasB = 0 
+
     
     #Variables de la Estadistica (Creo que no es necesario que sean globales pero las puse como en documento)
     tiempoPromedioA_A = 0
@@ -44,20 +44,81 @@ class Simulacion:
     eficienciaA_A = 0
     eficienciaB_B = 0
     eficienciaA_B = 0
+    @classmethod
+    def limpiarVariables(cls):
+        #Se limpian variables para hacer varias ejecuciones
+        cls.cola_A = ColaLlamadas()
+        cls.cola_B = ColaLlamadas()
+        cls.cola_A_B = ColaLlamadas()
+        cls.cola_eventos = ColaEventos() # La cola de eventos tiene solo los eventos programados
+        cls.ocupado_A = False
+        cls.cocupado_B = False
+        cls.reloj = 0
+        #Se limpian variables para las Estadisticas 
+        cls.cantLlamadasA = 0  
+        cls.cantLlamadasDesviadasA = 0 
+        cls.cantLlamadasB = 0 
+        cls.tamanoPromedioB = 0 
+        cls.cantLlamadasA_A = 0 
+        cls.duracionTotalLlamadasA_A = 0 
+        cls.tiempoEnColaTotalA_A = 0 
+        cls.cantLlamadasLocalesRuteadas = 0 
+        cls.cantLLamadasB_B = 0 
+        cls.duracionTotalLlamadasB_B = 0 
+        cls.tiempoEnColaTotalB_B = 0 
+        cls.cantLLamadasA_B = 0 
+        cls.duracionTotalLlamadasA_B = 0 
+        cls.tiempoEnColaTotalA_B = 0 
+        cls.cantLlamadasPerdidasB = 0 
 
     @classmethod
     def iniciar(cls):
-        # Inicializar Eventos
-        e1 = Evento(1, cls.reloj) 
-        e2 = Evento(2, cls.reloj)
+        i = 0
+        cantSimulaciones = int(input("Digite el numero de simulaciones: "))
+        max_time = int(input("Digite el numero total de segundos para correr cada simulacion: "))
+        while(i < cantSimulaciones):
+            print("---------------------------------------------------------------------------------------------------------------------------------")
+            # Inicializar Eventos
+            e1 = Evento(1, cls.reloj) 
+            e2 = Evento(2, cls.reloj)
 
-        cls.cola_eventos.push(e1)
-        cls.cola_eventos.push(e2)
-        
-        while cls.reloj < cls.max_time:
-            evento_actual = cls.cola_eventos.pop()
-            evento_actual.iniciar()
-        # Imprimir estadisticas
+            cls.cola_eventos.push(e1)
+            cls.cola_eventos.push(e2)
+            
+            while cls.reloj < max_time:
+                evento_actual = cls.cola_eventos.pop()
+                evento_actual.iniciar()
+            i += 1
+            """
+            # Imprimir estadisticas
+            print("Estadisticas de simulacion " + str (i))
+            #Tamano Promedio de la cola en B 
+            tamanoPromedioColaB =  / max_time
+            print("Tamano Promedio de la cola en B: " + str(tamanoPromedioColaB))
+            #Tiempo promedio de permanencia de una llamada en el sistema
+            #Llegaron a A y A las ruteo
+            tiempoPromedioA_A = duracionTotalLlamadasA_A / cantLlamadasA_A
+            print("Tiempo promedio de permanencia de una llamada que llego a A y A la ruteo: " +  str (tiempoPromedioA_A))
+            #Llegaron a B y B las ruteo
+            tiempoPromedioB_B = duracionTotalLlamadasB_B / cantLLamadasB_B
+            print("Tiempo promedio de permanencia de una llamada que llego a B y B la ruteo: " +  str (tiempoPromedioB_B))
+            #Se desviaron de A y B las ruteo
+            tiempoPromedioA_B = duracionTotalLlamadasA_B / cantLLamadasA_B
+            print("Tiempo promedio de permanencia de una llamada que la desvio A y B la ruteo: " +  str (tiempoPromedioA_B))
+            #Tiempo promedio en cola
+            #Llegaron a A y A las ruteo
+            #tPromedioColaA_A = tiempoEnColaTotalA_A / 
+            print("Tiempo promedio en cola de una llamada que llego a  A y A la ruteo: " + str (tPromedioColaA_A))
+            #Llegaron a B y B las ruteo
+            #tPromedioColaB_B = tiempoEnColaTotalB_B / 
+            print("Tiempo promedio en cola de una llamada que llego a  B y B la ruteo: " + str (tPromedioColaB_B))
+            #Se desviaron de A y B las ruteo
+            """
+            cls.limpiarVariables()
+
+           
+           
+
 
 @dataclass(order = True)
 class Evento:
