@@ -16,6 +16,34 @@ class Simulacion:
     ocupado_B = False
     reloj = 0
     max_time = 1000
+    #Variables para las Estadisticas
+    cantLlamadasA = 0  
+    cantLlamadasDesviadasA = 0 
+    cantLlamadasB = 0 
+    tamanoPromedioB = 0 
+    cantLlamadasA_A = 0 
+    duracionTotalLlamadasA_A = 0 
+    tiempoEnColaTotalA_A = 0 
+    cantLlamadasLocalesRuteadas = 0 
+    cantLLamadasB_B = 0 
+    duracionTotalLlamadasB_B = 0 
+    tiempoEnColaTotalB_B = 0 
+    cantLLamadasA_B = 0 
+    duracionTotalLlamadasA_B = 0 
+    tiempoEnColaTotalA_B = 0 
+    cantLlamadasPerdidasB = 0 
+    
+    #Variables de la Estadistica (Creo que no es necesario que sean globales pero las puse como en documento)
+    tiempoPromedioA_A = 0
+    tiempoPromedioB_B = 0
+    tiempoPromedioA_B = 0
+    tPromedioColaA_A = 0
+    tPromedioColaB_B = 0
+    tPromedioColaA_B = 0
+    porcentajeLlamadasLocalesPerdidas = 0
+    eficienciaA_A = 0
+    eficienciaB_B = 0
+    eficienciaA_B = 0
 
     @classmethod
     def iniciar(cls):
@@ -110,7 +138,6 @@ class Evento:
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, 2, 0)
         #Simulacion.cantLlamadasB += 1
-        #Simulacion.cantLlamadasLocalesB += 1
         if Simulacion.ocupado_B:
             #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultimaModificacion) * Simulacion.cola_B.size
             Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
@@ -153,10 +180,10 @@ class Evento:
         Simulacion.reloj = self.inicio   
         Simulacion.ocupado_A = False
         #Simulacion.cantLlamadasA_A += 1
-        #Simulacion.duracionSistema = Simulacion.reloj - self.llamada.inicio
-        #Simulacion.duracionTotalLlamadasA_A += Simulacion.duracionSistema
-        #Simulacion.tiempoEnColaA_A = Simulacion.reloj - self.llamada.inicio
-        #Simulacion.tiempoEnColaTotalA_A += Simulacion.tiempoEnColaA_A
+        #duracionSistema = Simulacion.reloj - self.llamada.inicio
+        #Simulacion.duracionTotalLlamadasA_A += duracionSistema
+        #tiempoEnColaA_A = Simulacion.reloj - self.llamada.inicio
+        #Simulacion.tiempoEnColaTotalA_A += tiempoEnColaA_A
         if self.llamada.tipo == 2 :
             pass
             #Simulacion.cantLlamadasLocalesRuteadas += 1
@@ -177,22 +204,21 @@ class Evento:
         print("Termina de atenderse llamada en B")
         Simulacion.reloj = self.inicio
         Simulacion.ocupado_B = False
-        #Simulacion.duracionSistema = Simulacion.reloj - self.llamada.inicio
+        #duracionSistema = Simulacion.reloj - self.llamada.inicio
         if self.llamada.origen == 0:
             pass
             #Simulacion.cantLLamadasB_B += 1
-            #Simulacion.duracionTotalLlamadasB_B += Simulacion.duracionSistema 
-            #Simulacion.tiempoEnColaB_B = Simulacion.reloj - self.llamada.inicio
-            #Simulacion.tiempoEnColaTotalB_B += Simulacion.tiempoEnColaB_B
+            #Simulacion.duracionTotalLlamadasB_B += duracionSistema 
+            #tiempoEnColaB_B = Simulacion.reloj - self.llamada.inicio
+            #Simulacion.tiempoEnColaTotalB_B += tiempoEnColaB_B
         else:
             pass
             #Simulacion.cantLLamadasA_B += 1
-            #Simulacion.duracionTotalLlamadasA_B += Simulacion.duracionSistema
-            #Simulacion.tiempoEnColaA_B = Simulacion.reloj - self.llamada.inicio
-            #Simulacion.tiempoEnColaTotalA_B += Simulacion.tiempoEnColaA_B
+            #Simulacion.duracionTotalLlamadasA_B += duracionSistema
+            #tiempoEnColaA_B = Simulacion.reloj - self.llamada.inicio
+            #Simulacion.tiempoEnColaTotalA_B += tiempoEnColaA_B
         if Simulacion.cola_B.size > 4:
             if self.llamada.tipo == 2:
-                #Simulacion.cantLlamadasLocalesB += 1 ***SE DEBE DE HABLAR PORQUE LA PROFE LO CORRIGIO**** creo que se debe eliminar
                 rand = random.randint(0, 9)
                 if rand == 0:
                     pass
