@@ -157,13 +157,11 @@ class Evento:
             self.evento5()
     
 
-
     def evento1(self):
         print("Llega llamada externa a A    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
-        llamada = Llamada(Simulacion.reloj, origen = 0)
+        llamada = Llamada(Simulacion.reloj, origen = 0, tiempoEnCola = 0)
         #Simulacion.cantLlamadasA += 1
-
         rand = random.randint(0, 9)
         if rand < 2:
             llamada.tipo = 1
@@ -197,7 +195,7 @@ class Evento:
     def evento2(self):
         print("Llega llamada externa a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
-        llamada = Llamada(Simulacion.reloj, 2, 0)
+        llamada = Llamada(Simulacion.reloj, 2, 0, 0)
         #Simulacion.cantLlamadasB += 1
         if Simulacion.ocupado_B:
             #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultimaModificacion) * Simulacion.cola_B.size
@@ -243,8 +241,7 @@ class Evento:
         #Simulacion.cantLlamadasA_A += 1
         #duracionSistema = Simulacion.reloj - self.llamada.inicio
         #Simulacion.duracionTotalLlamadasA_A += duracionSistema
-        #tiempoEnColaA_A = Simulacion.reloj - self.llamada.inicio
-        #Simulacion.tiempoEnColaTotalA_A += tiempoEnColaA_A
+        #Simulacion.tiempoEnColaTotalA_A += self.llamada.tiempoEnCola
         if self.llamada.tipo == 2 :
             pass
             #Simulacion.cantLlamadasLocalesRuteadas += 1
@@ -266,27 +263,24 @@ class Evento:
         Simulacion.reloj = self.inicio
         Simulacion.ocupado_B = False
         #duracionSistema = Simulacion.reloj - self.llamada.inicio
-        if self.llamada.origen == 0:
+        if self.llamada.tipo == 2:
             pass
-            #Simulacion.cantLLamadasB_B += 1
-            #Simulacion.duracionTotalLlamadasB_B += duracionSistema 
-            #tiempoEnColaB_B = Simulacion.reloj - self.llamada.inicio
-            #Simulacion.tiempoEnColaTotalB_B += tiempoEnColaB_B
-        else:
-            pass
-            #Simulacion.cantLLamadasA_B += 1
-            #Simulacion.duracionTotalLlamadasA_B += duracionSistema
-            #tiempoEnColaA_B = Simulacion.reloj - self.llamada.inicio
-            #Simulacion.tiempoEnColaTotalA_B += tiempoEnColaA_B
-        if Simulacion.cola_B.size > 4:
-            if self.llamada.tipo == 2:
-                rand = random.randint(0, 9)
+            #Simulacion.cantLlamadasLocalesRuteadas += 1
+            if Simulacion.cola_B.size > 4 :
+                rand = random.randint(0,9)
                 if rand == 0:
                     pass
-                    #Simulacion.cantLlamadasPerdidasB += 1
-                else:
-                    pass
-                    #Simulacion.cantLlamadasLocalesRuteadas += 1
+                    #Simulacion.cantLlamadasPerdidasB
+        if self.llamada.origen == 0:
+            pass
+            #Simulacion.cantLlamadasB_B += 1
+            #Simulacion.duracionTotalLlamadasB_B += duracionSistema
+            #Simulacion.tiempoEnColaTotalB_B += self.llamada.tiempoEnCola
+        else:
+            pass
+            #Simulacion.cantLlamadasA_B += 1
+            #Simulacion.duracionTotalLlamadasA_B += duracionSistema
+            #Simulacion.tiempoEnColaTotalA_B += self.llamada.tiempoEnCola + 0.5          
         if Simulacion.cola_B.size > 0:
             #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
             #Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
@@ -297,6 +291,7 @@ class Evento:
                 tiempo_atencion = self.TAtencionB2()
             inicio = Simulacion.reloj + tiempo_atencion
             e5 = Evento(5, inicio, llamada)
+            Simulacion.cola_eventos.push(e5)
 
 
     def TAtencionA1(self):
