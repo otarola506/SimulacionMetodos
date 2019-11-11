@@ -303,6 +303,7 @@ class Evento:
             
         if Simulacion.cola_A.size > 0:
             llamada = Simulacion.cola_A.pop()
+            llamada.tiempoEnCola = Simulacion.reloj - llamada.inicio
             Simulacion.ocupado_A = True
             if llamada.tipo == 1:
                 tiempo_atencion = self.TAtencionA1()
@@ -340,6 +341,7 @@ class Evento:
             Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
             Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
             llamada = Simulacion.cola_B.pop()
+            llamada.tiempoEnCola = Simulacion.reloj - llamada.inicio
             if llamada.tipo == 1:
                 tiempo_atencion = self.TAtencionB1()
             else:
