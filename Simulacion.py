@@ -181,7 +181,9 @@ class Evento:
         self.llamada = llamada
 
     def __str__(self):
-        return self.__class__.nombre_evento[self.tipo] + " Inicio: " + str(self.inicio) + " Llamada: " + str(self.llamada)
+        if self.llamada != None:
+            return self.__class__.nombre_evento[self.tipo] + " Inicio: " + str(self.inicio) + " Llamada: " + str(self.llamada)
+        return self.__class__.nombre_evento[self.tipo] + " Inicio: " + str(self.inicio)
 
     def set_inicio(self, inicio):
         self.inicio = inicio
