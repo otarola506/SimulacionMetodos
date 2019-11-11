@@ -7,7 +7,7 @@ class Llamada:
         self.tiempoEnCola = tiempoEnCola
 
     def __str__(self):
-        return repr(self) + "\ninicio: " + str(self.inicio) + "\ntipo: " + str(self.tipo) + "\norigen: " + str(self.origen)
+        return "Inicio: " + str(self.inicio) + " Tipo: " + str(self.tipo) + " Origen: " + str(self.origen)
 
     def set_inicio(self, inicio):
         self.inicio = inicio

@@ -48,6 +48,7 @@ class Simulacion:
     eficienciaB_B = 0
     eficienciaA_B = 0
 
+
     @classmethod
     def limpiarVariables(cls):
         #Se limpian variables para hacer varias ejecuciones
@@ -76,20 +77,66 @@ class Simulacion:
         cls.duracionTotalLlamadasA_B = 0 
         cls.tiempoEnColaTotalA_B = 0 
         cls.cantLlamadasPerdidasB = 0 
-    
+
+    @classmethod
     def imprimirEstadoSimulacion(cls):
+        print("----------------------------------------------------------------------------------------")
         print("Estado de la simulacion")
+        print("----------------------------------------------------------------------------------------\n")
         print("Reloj: " + str(cls.reloj))
         print("EventoActual: " + str(cls.evento_actual))
-        print("Estado ruteador A: " + str(cls.ocupado_A))
-        print("Estado ruteador B: " + str(cls.ocupado_B))
+        print("Ruteador A ocupado?: " + str(cls.ocupado_A))
+        print("Ruteador B ocupado?: " + str(cls.ocupado_B))
         print("Numero de llamadas que han llegado a A: " + str(cls.cantLlamadasA))
-        print("Numero de llamadas que han llegado a A y se enviaron a B: " + str(cls.cantLLamadasA_B))
+        print("Numero de llamadas que han llegado a A y se enviaron a B: " + str(cls.cantLlamadasA_B))
         print("Numero de llamadas que han llegado a B en total: " + str(cls.cantLlamadasB))
         print("Numero de llamadas que A ha ruteado: " + str(cls.cantLlamadasA_A))
         print("Numero de llamadas que B ha ruteado: " + str(cls.cantLlamadasA_B + cls.cantLlamadasA_A))
         print("Numero de llamadas que B ha perdido: " + str(cls.cantLlamadasPerdidasB))
 
+    @classmethod
+    def imprimirEstadisticasCorrida(cls, corrida):
+        print("----------------------------------------------------------------------------------------")
+        print("Estadisticas de la Corrida " + str(corrida))
+        print("----------------------------------------------------------------------------------------\n")
+        #Tamano Promedio de la cola en B 
+        cls.tamanoPromedioB += (cls.reloj - cls.cola_B.ultima_modificacion) * cls.cola_B.size
+        tamanoPromedioColaB = cls.tamanoPromedioB / cls.reloj   
+        print("Tamano Promedio de la cola en B: " + str(tamanoPromedioColaB))
+        #Tiempo promedio de permanencia de una llamada en el sistema
+        #Llegaron a A y A las ruteo
+        tiempoPromedioA_A = cls.duracionTotalLlamadasA_A / cls.cantLlamadasA_A
+        print("Tiempo promedio de permanencia de una llamada que llego a A y A la ruteo: " +  str (tiempoPromedioA_A))
+        #Llegaron a B y B las ruteo
+        tiempoPromedioB_B = cls.duracionTotalLlamadasB_B / cls.cantLlamadasB_B
+        print("Tiempo promedio de permanencia de una llamada que llego a B y B la ruteo: " +  str (tiempoPromedioB_B))
+        #Se desviaron de A y B las ruteo
+        tiempoPromedioA_B = cls.duracionTotalLlamadasA_B / cls.cantLlamadasA_B
+        print("Tiempo promedio de permanencia de una llamada que la desvio A y B la ruteo: " +  str (tiempoPromedioA_B))
+        #Tiempo promedio en cola
+        #Llegaron a A y A las ruteo
+        tPromedioColaA_A =  cls.tiempoEnColaTotalA_A / cls.cantLlamadasA_A
+        print("Tiempo promedio en cola de una llamada que llego a  A y A la ruteo: " + str (tPromedioColaA_A))
+        #Llegaron a B y B las ruteo
+        tPromedioColaB_B = cls.tiempoEnColaTotalB_B / cls.cantLlamadasB_B
+        print("Tiempo promedio en cola de una llamada que llego a  B y B la ruteo: " + str (tPromedioColaB_B))
+        #Se desviaron de A y B las ruteo
+        tPromedioColaA_B = cls.tiempoEnColaTotalA_B / cls.cantLlamadasA_B
+        print("Tiempo promedio en cola de una llamada que la desvio A y B la ruteo: " + str (tPromedioColaA_B))
+        #Porcentaje de llamadas perdidas por B
+        porcentajeLlamadasLocalesPerdidas = (cls.cantLlamadasPerdidasB / cls.cantLlamadasLocalesRuteadas) * 100 
+        print("Porcentaje de llamadas perdidas por B: " + str(porcentajeLlamadasLocalesPerdidas))
+        #Eficiencia
+        #Llegaron a A y A las ruteo
+        eficienciaA_A = tPromedioColaA_A / tiempoPromedioA_A
+        print("Eficiencia de las llamadas que llegaron a A y A las ruteo: " + str(eficienciaA_A))
+        #Llegaron a B y B las ruteo
+        eficienciaB_B = tPromedioColaB_B / tiempoPromedioB_B
+        print("Eficiencia de las llamadas que llegaron a B y B las ruteo: " + str(eficienciaB_B))
+        #Se desviaron de A y B las ruteo
+        eficienciaA_B = tPromedioColaA_B / tiempoPromedioA_B
+        print("Eficiencia de las llamadas que se desviaron de A y B las ruteo: " + str(eficienciaA_B))
+          
     @classmethod
     def iniciar(cls):
         cant_corridas = int(sys.argv[1])
@@ -114,20 +161,27 @@ class Simulacion:
                 cls.evento_actual.iniciar()
                 if modo_lonto:
                     time.sleep(delay)
-                    # imprimir estado actual simulacion
-            # imprimir estadisticias corrida
+                    cls.imprimirEstadoSimulacion()
+            cls.imprimirEstadisticasCorrida(corrida_actual)
             cls.limpiarVariables()
         #imprmir estadisticas promedio corridas
 
 @dataclass(order = True)
 class Evento:
-    def __init__(self, tipo = -1, inicio = -1, llamada = -1):
+    nombre_evento = dict()
+    nombre_evento[1] = "E1-> Llega llamada externa a  A"
+    nombre_evento[2] = "E2-> Llega llamada externa a  B"
+    nombre_evento[3] = "E3-> Llega llamada de A a B"
+    nombre_evento[4] = "E4-> Termina de atender llamada en A"
+    nombre_evento[5] = "E5-> Termina de atender llamada en B"
+
+    def __init__(self, tipo = -1, inicio = -1, llamada = None):
         self.tipo = tipo
         self.inicio = inicio
         self.llamada = llamada
 
     def __str__(self):
-        return repr(self) + "\ntipo: " + str(self.tipo) + "\ninicio: " + str(self.inicio) + "\nllamada: " + str(self.llamada)
+        return self.__class__.nombre_evento[self.tipo] + " Inicio: " + str(self.inicio) + " Llamada: " + str(self.llamada)
 
     def set_inicio(self, inicio):
         self.inicio = inicio
@@ -157,10 +211,10 @@ class Evento:
     
 
     def evento1(self):
-        print("Llega llamada externa a A    Inicio: " + str(self.inicio))
+        #print("Llega llamada externa a A    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, origen = 0, tiempoEnCola = 0)
-        #Simulacion.cantLlamadasA += 1
+        Simulacion.cantLlamadasA += 1
         rand = random.randint(0, 9)
         if rand < 2:
             llamada.tipo = 1
@@ -173,7 +227,7 @@ class Evento:
                 if Simulacion.cola_eventos.exists(3) == False:
                     e3 = Evento(3, Simulacion.reloj + 0.5, llamada)
                     Simulacion.cola_eventos.push(e3) 
-                    #Simulacion.cantLlamadasDesviadasA += 1
+                    Simulacion.cantLlamadasDesviadasA += 1
                 else:
                     Simulacion.cola_A_B.push(llamada)
             else:
@@ -192,12 +246,12 @@ class Evento:
         Simulacion.cola_eventos.push(e1)
 
     def evento2(self):
-        print("Llega llamada externa a B    Inicio: " + str(self.inicio))
+        #print("Llega llamada externa a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, 2, 0, 0)
-        #Simulacion.cantLlamadasB += 1
+        Simulacion.cantLlamadasB += 1
         if Simulacion.ocupado_B:
-            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultimaModificacion) * Simulacion.cola_B.size
+            Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
             Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
             Simulacion.cola_B.push(llamada)
         else:
@@ -211,11 +265,11 @@ class Evento:
         Simulacion.cola_eventos.push(e2)
 
     def evento3(self):
-        print("Llega llamada de A a B    Inicio: " + str(self.inicio))
+        #print("Llega llamada de A a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
-        #Simulacion.cantLlamadasB += 1
+        Simulacion.cantLlamadasB += 1
         if Simulacion.ocupado_B:
-            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultimaModificacion) * Simulacion.cola_B.size
+            Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
             Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
             Simulacion.cola_B.push(self.llamada)
         else:
@@ -234,16 +288,16 @@ class Evento:
 
 
     def evento4(self):
-        print("Termina de atenderse llamada en A")
+        #print("Termina de atenderse llamada en A")
         Simulacion.reloj = self.inicio   
         Simulacion.ocupado_A = False
-        #Simulacion.cantLlamadasA_A += 1
-        #duracionSistema = Simulacion.reloj - self.llamada.inicio
-        #Simulacion.duracionTotalLlamadasA_A += duracionSistema
-        #Simulacion.tiempoEnColaTotalA_A += self.llamada.tiempoEnCola
+        Simulacion.cantLlamadasA_A += 1
+        duracionSistema = Simulacion.reloj - self.llamada.inicio
+        Simulacion.duracionTotalLlamadasA_A += duracionSistema
+        Simulacion.tiempoEnColaTotalA_A += self.llamada.tiempoEnCola
         if self.llamada.tipo == 2 :
             pass
-            #Simulacion.cantLlamadasLocalesRuteadas += 1
+            Simulacion.cantLlamadasLocalesRuteadas += 1
             
         if Simulacion.cola_A.size > 0:
             llamada = Simulacion.cola_A.pop()
@@ -258,31 +312,31 @@ class Evento:
 
 
     def evento5(self):
-        print("Termina de atenderse llamada en B")
+        #print("Termina de atenderse llamada en B")
         Simulacion.reloj = self.inicio
         Simulacion.ocupado_B = False
-        #duracionSistema = Simulacion.reloj - self.llamada.inicio
+        duracionSistema = Simulacion.reloj - self.llamada.inicio
         if self.llamada.tipo == 2:
             pass
-            #Simulacion.cantLlamadasLocalesRuteadas += 1
+            Simulacion.cantLlamadasLocalesRuteadas += 1
             if Simulacion.cola_B.size > 4 :
                 rand = random.randint(0,9)
                 if rand == 0:
                     pass
-                    #Simulacion.cantLlamadasPerdidasB
+                    Simulacion.cantLlamadasPerdidasB += 1
         if self.llamada.origen == 0:
             pass
-            #Simulacion.cantLlamadasB_B += 1
-            #Simulacion.duracionTotalLlamadasB_B += duracionSistema
-            #Simulacion.tiempoEnColaTotalB_B += self.llamada.tiempoEnCola
+            Simulacion.cantLlamadasB_B += 1
+            Simulacion.duracionTotalLlamadasB_B += duracionSistema
+            Simulacion.tiempoEnColaTotalB_B += self.llamada.tiempoEnCola
         else:
             pass
-            #Simulacion.cantLlamadasA_B += 1
-            #Simulacion.duracionTotalLlamadasA_B += duracionSistema
-            #Simulacion.tiempoEnColaTotalA_B += self.llamada.tiempoEnCola + 0.5          
+            Simulacion.cantLlamadasA_B += 1
+            Simulacion.duracionTotalLlamadasA_B += duracionSistema
+            Simulacion.tiempoEnColaTotalA_B += self.llamada.tiempoEnCola + 0.5          
         if Simulacion.cola_B.size > 0:
-            #Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
-            #Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
+            Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
+            Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
             llamada = Simulacion.cola_B.pop()
             if llamada.tipo == 1:
                 tiempo_atencion = self.TAtencionB1()
