@@ -14,7 +14,7 @@ class Simulacion:
     cola_B = ColaLlamadas()
     cola_A_B = ColaLlamadas()
     cola_eventos = ColaEventos() # La cola de eventos tiene solo los eventos programados
-    evento_actual = None # La cola de eventos tiene solo los eventos programados
+    evento_actual = None
     ocupado_A = False
     ocupado_B = False
     reloj = 0
@@ -56,9 +56,9 @@ class Simulacion:
         cls.cola_B = ColaLlamadas()
         cls.cola_A_B = ColaLlamadas()
         cls.cola_eventos = ColaEventos() # La cola de eventos tiene solo los eventos programados
-        cls.evento_actual = ColaEventos() # La cola de eventos tiene solo los eventos programados
+        cls.evento_actual = None
         cls.ocupado_A = False
-        cls.cocupado_B = False
+        cls.ocupado_B = False
         cls.reloj = 0
 
         #Se limpian variables para las Estadisticas 
