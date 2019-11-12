@@ -1,6 +1,6 @@
 
 class Llamada:
-    origen_string = {0: "A", 1: "Locales"}
+    origen_string = {0: "A", 1: "Externa"}
     tipo_string = {1: "Larga distancia", 2: "Local"}
 
     def __init__(self, inicio = -1, tipo = -1, origen = -1 , tiempoEnCola = 0 ):
