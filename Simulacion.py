@@ -87,6 +87,8 @@ class Simulacion:
         print("EventoActual: " + str(cls.evento_actual))
         print("Ruteador A ocupado?: " + str(cls.ocupado_A))
         print("Ruteador B ocupado?: " + str(cls.ocupado_B))
+        print("La longitud de la cola en A: " + str(cls.cola_A.size))
+        print("La longitud de la cola en B: " + str(cls.cola_B.size))
         print("Numero de llamadas que han llegado a A: " + str(cls.cantLlamadasA))
         print("Numero de llamadas que han llegado a A y se enviaron a B: " + str(cls.cantLlamadasA_B))
         print("Numero de llamadas que han llegado a B en total: " + str(cls.cantLlamadasB))
@@ -161,7 +163,7 @@ class Simulacion:
                 cls.evento_actual.iniciar()
                 if modo_lonto:
                     time.sleep(delay)
-                    cls.imprimirEstadoSimulacion()
+                cls.imprimirEstadoSimulacion()
             cls.imprimirEstadisticasCorrida(corrida_actual)
             cls.limpiarVariables()
         #imprmir estadisticas promedio corridas
