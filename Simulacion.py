@@ -36,18 +36,18 @@ class Simulacion:
     tiempoEnColaTotalA_B = 0 
     cantLlamadasPerdidasB = 0 
 
-    # (Creo que no es necesario que sean globales pero las puse como en documento)
-    tiempoPromedioA_A = 0
-    tiempoPromedioB_B = 0
-    tiempoPromedioA_B = 0
-    tPromedioColaA_A = 0
-    tPromedioColaB_B = 0
-    tPromedioColaA_B = 0
-    porcentajeLlamadasLocalesPerdidas = 0
-    eficienciaA_A = 0
-    eficienciaB_B = 0
-    eficienciaA_B = 0
-
+    # Variables para el promedio de los promedios de stadisticas al final de todas las corridas
+    sumTamanosPromedioColaB = 0
+    sumTiemposPromedioA_A = 0
+    sumTiemposPromedioB_B = 0
+    sumTiemposPromedioA_B = 0
+    sumTPromedioColaA_A = 0
+    sumTPromedioColaB_B = 0
+    sumTPromedioColaA_B = 0
+    sumPorcentajesLlamadasLocalesPerdidas = 0
+    sumEficienciaA_A = 0
+    sumEficienciaB_B = 0
+    sumEficienciaA_B = 0
 
     @classmethod
     def limpiarVariables(cls):
@@ -104,61 +104,114 @@ class Simulacion:
         #Tamano Promedio de la cola en B 
         cls.tamanoPromedioB += (cls.reloj - cls.cola_B.ultima_modificacion) * cls.cola_B.size
         tamanoPromedioColaB = cls.tamanoPromedioB / cls.reloj 
+        cls.sumTamanosPromedioColaB += tamanoPromedioColaB
         print("Tamano Promedio de la cola en B: " + str(tamanoPromedioColaB))
         #Tiempo promedio de permanencia de una llamada en el sistema
         #Llegaron a A y A las ruteo
         tiempoPromedioA_A = 0
         if cls.cantLlamadasA_A != 0:
-        	tiempoPromedioA_A = cls.duracionTotalLlamadasA_A / cls.cantLlamadasA_A
+            tiempoPromedioA_A = cls.duracionTotalLlamadasA_A / cls.cantLlamadasA_A
+        cls.sumTiemposPromedioA_A += tiempoPromedioA_A
         print("Tiempo promedio de permanencia de una llamada que llego a A y A la ruteo: " +  str (tiempoPromedioA_A))
         #Llegaron a B y B las ruteo
         tiempoPromedioB_B = 0
         if cls.cantLlamadasB_B != 0:
-        	tiempoPromedioB_B = cls.duracionTotalLlamadasB_B / cls.cantLlamadasB_B
+            tiempoPromedioB_B = cls.duracionTotalLlamadasB_B / cls.cantLlamadasB_B
+        cls.sumTiemposPromedioB_B += tiempoPromedioB_B
         print("Tiempo promedio de permanencia de una llamada que llego a B y B la ruteo: " +  str (tiempoPromedioB_B))
         #Se desviaron de A y B las ruteo
         tiempoPromedioA_B = 0
         if cls.cantLlamadasA_B != 0:
-        	tiempoPromedioA_B = cls.duracionTotalLlamadasA_B / cls.cantLlamadasA_B
+            tiempoPromedioA_B = cls.duracionTotalLlamadasA_B / cls.cantLlamadasA_B
+        cls.sumTiemposPromedioA_B += tiempoPromedioA_B
         print("Tiempo promedio de permanencia de una llamada que la desvio A y B la ruteo: " +  str (tiempoPromedioA_B))
         #Tiempo promedio en cola
         #Llegaron a A y A las ruteo
         tPromedioColaA_A = 0
         if cls.cantLlamadasA_A != 0:
-        	tPromedioColaA_A =  cls.tiempoEnColaTotalA_A / cls.cantLlamadasA_A
+            tPromedioColaA_A =  cls.tiempoEnColaTotalA_A / cls.cantLlamadasA_A
+        cls.sumTPromedioColaA_A += tPromedioColaA_A
         print("Tiempo promedio en cola de una llamada que llego a  A y A la ruteo: " + str (tPromedioColaA_A))
         #Llegaron a B y B las ruteo
         tPromedioColaB_B = 0
         if cls.cantLlamadasB_B != 0:
-        	tPromedioColaB_B = cls.tiempoEnColaTotalB_B / cls.cantLlamadasB_B
+            tPromedioColaB_B = cls.tiempoEnColaTotalB_B / cls.cantLlamadasB_B
+        cls.sumTPromedioColaB_B += tPromedioColaB_B
         print("Tiempo promedio en cola de una llamada que llego a  B y B la ruteo: " + str (tPromedioColaB_B))
         #Se desviaron de A y B las ruteo
         tPromedioColaA_B = 0
         if cls.cantLlamadasA_B != 0:
-        	tPromedioColaA_B = cls.tiempoEnColaTotalA_B / cls.cantLlamadasA_B
+            tPromedioColaA_B = cls.tiempoEnColaTotalA_B / cls.cantLlamadasA_B
+        cls.sumTPromedioColaA_B += tPromedioColaA_B
         print("Tiempo promedio en cola de una llamada que la desvio A y B la ruteo: " + str (tPromedioColaA_B))
         #Porcentaje de llamadas perdidas por B
         porcentajeLlamadasLocalesPerdidas = 0
         if cls.cantLlamadasLocalesRuteadas != 0:
-        	porcentajeLlamadasLocalesPerdidas = (cls.cantLlamadasPerdidasB / cls.cantLlamadasLocalesRuteadas) * 100 
+            porcentajeLlamadasLocalesPerdidas = (cls.cantLlamadasPerdidasB / cls.cantLlamadasLocalesRuteadas) * 100 
+        cls.sumPorcentajesLlamadasLocalesPerdidas += porcentajeLlamadasLocalesPerdidas
         print("Porcentaje de llamadas perdidas por B: " + str(porcentajeLlamadasLocalesPerdidas))
         #Eficiencia
         #Llegaron a A y A las ruteo
         eficienciaA_A = 0
         if tiempoPromedioA_A != 0:
-        	eficienciaA_A = tPromedioColaA_A / tiempoPromedioA_A
+            eficienciaA_A = tPromedioColaA_A / tiempoPromedioA_A
+        cls.sumEficienciaA_A += eficienciaA_A
         print("Eficiencia de las llamadas que llegaron a A y A las ruteo: " + str(eficienciaA_A))
         #Llegaron a B y B las ruteo
         eficienciaB_B = 0
         if tiempoPromedioB_B != 0:
-        	eficienciaB_B = tPromedioColaB_B / tiempoPromedioB_B
+            eficienciaB_B = tPromedioColaB_B / tiempoPromedioB_B
+        cls.sumEficienciaB_B += eficienciaB_B
         print("Eficiencia de las llamadas que llegaron a B y B las ruteo: " + str(eficienciaB_B))
         #Se desviaron de A y B las ruteo
         eficienciaA_B = 0
         if tiempoPromedioA_B != 0:
-        	eficienciaA_B = tPromedioColaA_B / tiempoPromedioA_B
+            eficienciaA_B = tPromedioColaA_B / tiempoPromedioA_B
+        cls.sumEficienciaA_B += eficienciaA_B
         print("Eficiencia de las llamadas que se desviaron de A y B las ruteo: " + str(eficienciaA_B))
-          
+    
+    @classmethod
+    def imprimirEstadisticasGlobales(cls, cant_corridas):
+        print("----------------------------------------------------------------------------------------")
+        print("Estadisticas Globales al final de las corridas ")
+        print("----------------------------------------------------------------------------------------\n")
+        #Tamano promedio global de la cola en B
+        tamanoPromedioColaBGlobal = cls.sumTamanosPromedioColaB / cant_corridas
+        print("Tamano Promedio Global de la cola en B: " + str(tamanoPromedioColaBGlobal))
+        #Tiempo promedio global de permanencia de una llamada en el sistema
+        #Llegaron a A y A las ruteo  
+        tiempoPromedioA_AGlobal = cls.sumTiemposPromedioA_A / cant_corridas
+        print("Tiempo promedio global de permanencia de una llamada que llego a A y A la ruteo: " +  str (tiempoPromedioA_AGlobal))
+        #Llegaron a B y B las ruteo
+        tiempoPromedioB_BGlobal = cls.sumTiemposPromedioB_B / cant_corridas
+        print("Tiempo promedio global de permanencia de una llamada que llego a B y B la ruteo: " +  str (tiempoPromedioB_BGlobal))
+        #Se desviaron de A y B las ruteo
+        tiempoPromedioA_BGlobal = cls.sumTiemposPromedioA_B / cant_corridas
+        print("Tiempo promedio global permanencia de una llamada que la desvio A y B la ruteo: " +  str (tiempoPromedioA_BGlobal))
+        #Tiempo promedio en cola global
+        #Llegaron a A y A las ruteo
+        tPromedioColaA_AGlobal = cls.sumTPromedioColaA_A / cant_corridas
+        print("Tiempo promedio global en cola de una llamada que llego a  A y A la ruteo: " + str (tPromedioColaA_AGlobal))
+        #Llegaron a B y B las ruteo 
+        tPromedioColaB_BGlobal = cls.sumTPromedioColaB_B / cant_corridas
+        print("Tiempo promedio global en cola de una llamada que llego a  B y B la ruteo: " + str (tPromedioColaB_BGlobal))
+        #Se desviaron de A y B las ruteo
+        tPromedioColaA_BGlobal = cls.sumTPromedioColaA_B / cant_corridas
+        print("Tiempo promedio global en cola de una llamada que la desvio A y B la ruteo: " + str (tPromedioColaA_BGlobal))
+        #Porcentaje global de llamadas perdidas por B
+        porcentajeLlamadasLocalesPerdidasGlobal = cls.sumPorcentajesLlamadasLocalesPerdidas / cant_corridas
+        print("Porcentaje global de llamadas perdidas por B: " + str(porcentajeLlamadasLocalesPerdidasGlobal))
+        #Eficiencia Global
+        #Llegaron a A y A las ruteo
+        eficienciaA_AGlobal = cls.sumEficienciaA_A / cant_corridas
+        print("Eficiencia global de las llamadas que llegaron a A y A las ruteo: " + str(eficienciaA_AGlobal))
+        #Llegaron a B y B las ruteo
+        eficienciaB_BGlobal = cls.sumEficienciaB_B / cant_corridas
+        print("Eficiencia global de las llamadas que llegaron a B y B las ruteo: " + str(eficienciaB_BGlobal))
+        #Se desviaron de A y B las ruteo
+        eficienciaA_BGlobal = cls.sumEficienciaA_B / cant_corridas
+        print("Eficiencia global de las llamadas que se desviaron de A y B las ruteo: " + str(eficienciaA_BGlobal))    
+
     @classmethod
     def iniciar(cls):
         cant_corridas = int(sys.argv[1])
@@ -187,6 +240,7 @@ class Simulacion:
             cls.imprimirEstadisticasCorrida(corrida_actual)
             cls.limpiarVariables()
         #imprimir estadisticas promedio corridas
+        cls.imprimirEstadisticasGlobales(cant_corridas)
 
 @dataclass(order = True)
 class Evento:
