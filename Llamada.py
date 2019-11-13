@@ -1,4 +1,4 @@
-
+#Clase que representa la llamada tiene inicio, tipo, origen, tiempoEnCola
 class Llamada:
     origen_string = {0: "A", 1: "Externa"}
     tipo_string = {1: "Larga distancia", 2: "Local"}

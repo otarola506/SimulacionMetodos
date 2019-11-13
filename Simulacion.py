@@ -36,7 +36,7 @@ class Simulacion:
     tiempoEnColaTotalA_B = 0 
     cantLlamadasPerdidasB = 0 
 
-    # Variables para el promedio de los promedios de stadisticas al final de todas las corridas
+    # Variables para el promedio de los promedios de estadisticas al final de todas las corridas
     sumTamanosPromedioColaB = 0
     sumTiemposPromedioA_A = 0
     sumTiemposPromedioB_B = 0
@@ -50,6 +50,7 @@ class Simulacion:
     sumEficienciaA_B = 0
 
     @classmethod
+    #Metodo para limpiar las variables cada vez que se ejecuta una corrida
     def limpiarVariables(cls):
         #Se limpian variables para hacer varias ejecuciones
         cls.cola_A = ColaLlamadas()
@@ -79,6 +80,7 @@ class Simulacion:
         cls.cantLlamadasPerdidasB = 0 
 
     @classmethod
+    #Metodo para imprimir los estados de la simulacion 
     def imprimirEstadoSimulacion(cls):
         print("----------------------------------------------------------------------------------------")
         print("Estado de la simulacion")
@@ -97,6 +99,7 @@ class Simulacion:
         print("Numero de llamadas que B ha perdido: " + str(cls.cantLlamadasPerdidasB))
 
     @classmethod
+    #Metodo para imprimir las estadisticas por corrida de la simulacion
     def imprimirEstadisticasCorrida(cls, corrida):
         print("----------------------------------------------------------------------------------------")
         print("Estadisticas de la Corrida " + str(corrida))
@@ -171,6 +174,7 @@ class Simulacion:
         print("Eficiencia de las llamadas que se desviaron de A y B las ruteo: " + str(eficienciaA_B))
     
     @classmethod
+    #Metodo para imprimir las estadisticas globales al finalizar todo el programa (despues de todas las corridas)
     def imprimirEstadisticasGlobales(cls, cant_corridas):
         print("----------------------------------------------------------------------------------------")
         print("Estadisticas Globales al final de las corridas ")
@@ -213,6 +217,7 @@ class Simulacion:
         print("Eficiencia global de las llamadas que se desviaron de A y B las ruteo: " + str(eficienciaA_BGlobal))    
 
     @classmethod
+    #Metodo que inicia la simulacion
     def iniciar(cls):
         cant_corridas = int(sys.argv[1])
         max_time = float(sys.argv[2])
@@ -243,6 +248,7 @@ class Simulacion:
         cls.imprimirEstadisticasGlobales(cant_corridas)
 
 @dataclass(order = True)
+#Clase que representa el evento, tiene tipo, inicio y llamada
 class Evento:
     nombre_evento = dict()
     nombre_evento[1] = "E1-> Llega llamada externa a  A"
@@ -287,9 +293,8 @@ class Evento:
         if self.tipo == 5: # E5: Termina de atender llamada en B
             self.evento5()
     
-
+    #E1: Llega llamada externa a A.
     def evento1(self):
-        #print("Llega llamada externa a A    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, origen = 0, tiempoEnCola = 0)
         Simulacion.cantLlamadasA += 1
@@ -323,8 +328,8 @@ class Evento:
         e1 = Evento(1, Simulacion.reloj + tiempo_entre_arribos)
         Simulacion.cola_eventos.push(e1)
 
+    #E2: Llega llamada externa a B
     def evento2(self):
-        #print("Llega llamada externa a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         llamada = Llamada(Simulacion.reloj, 2, 0, 0)
         Simulacion.cantLlamadasB += 1
@@ -341,9 +346,8 @@ class Evento:
         tiempo_entre_arribos = self.TEntreArribosB()
         e2 = Evento(2, Simulacion.reloj + tiempo_entre_arribos)
         Simulacion.cola_eventos.push(e2)
-
+    #E3: Llega llamada de A a B
     def evento3(self):
-        #print("Llega llamada de A a B    Inicio: " + str(self.inicio))
         Simulacion.reloj = self.inicio
         Simulacion.cantLlamadasB += 1
         if Simulacion.ocupado_B:
@@ -364,9 +368,8 @@ class Evento:
             e3 = Evento(3, inicio, llamada)
             Simulacion.cola_eventos.push(e3)
 
-
+    #E4:Termina de atenderse llamada en A
     def evento4(self):
-        #print("Termina de atenderse llamada en A")
         Simulacion.reloj = self.inicio   
         Simulacion.ocupado_A = False
         Simulacion.cantLlamadasA_A += 1
@@ -388,10 +391,9 @@ class Evento:
             e4 = Evento(4, inicio, llamada)
             Simulacion.cola_eventos.push(e4)
 
-
+    # E5: Termina de atenderse llamada en B
     def evento5(self):
-        #print("Termina de atenderse llamada en B")
-        Simulacion.reloj = self.inicio
+        Simulacion.reloj = self.inicio#print("Termina de atenderse llamada en B")
         Simulacion.ocupado_B = False
         duracionSistema = Simulacion.reloj - self.llamada.inicio
         if self.llamada.tipo == 2:
@@ -421,12 +423,13 @@ class Evento:
             e5 = Evento(5, inicio, llamada)
             Simulacion.cola_eventos.push(e5)
 
-
+    #Tiempo de atención de una llamada tipo 1 en el ruteador A
     def TAtencionA1(self):
         r = random.random()
         x = 10 * (5 * r + 4) ** 1 / 2
         return x
-
+    
+    #Tiempo de atención de una llamada de tipo 2 en el ruteador A
     def TAtencionA2(self):
         z = 0.0
         esNegativo=True
@@ -438,7 +441,7 @@ class Evento:
             if x >= 0:
                 esNegativo = False
         return x
-             
+    # Tiempo entre arribos de A         
     def TEntreArribosA(self):
         esUno=True
         while esUno:
@@ -448,6 +451,7 @@ class Evento:
         x = - math.log(1 - r) / (2 / 3)
         return x
 
+    # Tiempo de atención de una llamada tipo 1 en el ruteador B 
     def TAtencionB1(self):
         r = random.random()
         if r <= 0.5:
@@ -455,7 +459,8 @@ class Evento:
         else:
             x = 3 - 2 * math.sqrt(2- 2 * r)
         return x
-        
+
+    #Tiempo de atención de una llamada tipo 2 
     def TAtencionB2(self):
         esUno=True
         while esUno:
@@ -465,10 +470,11 @@ class Evento:
         x = - math.log(1 - r) / (4 / 3)
         return x
     
+    # Tiempo entre arribos de B
     def TEntreArribosB(self):
         r = random.random()
         x = 2 *  r + 1
 
         return x
-
+#Llamado para iniciar la simulacion
 Simulacion.iniciar()
