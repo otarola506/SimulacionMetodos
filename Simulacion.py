@@ -80,7 +80,7 @@ class Simulacion:
         cls.cantLlamadasPerdidasB = 0 
 
     @classmethod
-    #Metodo para imprimir los estados de la simulacion 
+    #Metodo para imprimir el estado de la simulacion 
     def imprimirEstadoSimulacion(cls):
         print("----------------------------------------------------------------------------------------")
         print("Estado de la simulacion")
@@ -217,17 +217,17 @@ class Simulacion:
         print("Eficiencia global de las llamadas que se desviaron de A y B las ruteo: " + str(eficienciaA_BGlobal))    
 
     @classmethod
-    #Metodo que inicia la simulacion
     def iniciar(cls):
         cant_corridas = int(sys.argv[1])
         max_time = float(sys.argv[2])
         modo_lonto = False
         delay = 0
-
+        # Analisis de argumentos
         if len(sys.argv) == 5 and sys.argv[3] == "-l":
             modo_lonto = True
             delay = int(sys.argv[4])
 
+        # Ejecutar cant_corridas corridas
         for corrida_actual in range(0, cant_corridas):
             # Inicializar Eventos
             e1 = Evento(1, cls.reloj) 
@@ -244,8 +244,8 @@ class Simulacion:
                 cls.imprimirEstadoSimulacion()
             cls.imprimirEstadisticasCorrida(corrida_actual)
             cls.limpiarVariables()
-        #imprimir estadisticas promedio corridas
         cls.imprimirEstadisticasGlobales(cant_corridas)
+
 
 @dataclass(order = True)
 #Clase que representa el evento, tiene tipo, inicio y llamada
@@ -303,7 +303,6 @@ class Evento:
             llamada.tipo = 1
         else:
             llamada.tipo = 2
-        
         if Simulacion.ocupado_A == True:
             if Simulacion.cola_A.size == 5:
                 llamada.origen = 1
@@ -393,7 +392,7 @@ class Evento:
 
     # E5: Termina de atenderse llamada en B
     def evento5(self):
-        Simulacion.reloj = self.inicio#print("Termina de atenderse llamada en B")
+        Simulacion.reloj = self.inicio
         Simulacion.ocupado_B = False
         duracionSistema = Simulacion.reloj - self.llamada.inicio
         if self.llamada.tipo == 2:
@@ -426,7 +425,7 @@ class Evento:
     #Tiempo de atención de una llamada tipo 1 en el ruteador A
     def TAtencionA1(self):
         r = random.random()
-        x = 10 * (5 * r + 4) ** 1 / 2
+        x = 10 * (5 * r + 4) ** 1 / 2 # ** es el operador de Potenciación en python
         return x
     
     #Tiempo de atención de una llamada de tipo 2 en el ruteador A
@@ -441,9 +440,10 @@ class Evento:
             if x >= 0:
                 esNegativo = False
         return x
+
     # Tiempo entre arribos de A         
     def TEntreArribosA(self):
-        esUno=True
+        esUno = True
         while esUno:
             r = random.random()
             if r != 1:
@@ -457,12 +457,12 @@ class Evento:
         if r <= 0.5:
             x = 2 * r
         else:
-            x = 3 - 2 * math.sqrt(2- 2 * r)
+            x = 3 - 2 * math.sqrt(2 - 2 * r)
         return x
 
-    #Tiempo de atención de una llamada tipo 2 
+    #Tiempo de atención de una llamada tipo 2 en el ruteador B
     def TAtencionB2(self):
-        esUno=True
+        esUno = True
         while esUno:
             r = random.random()
             if r != 1:
@@ -476,5 +476,6 @@ class Evento:
         x = 2 *  r + 1
 
         return x
+
 #Llamado para iniciar la simulacion
 Simulacion.iniciar()
