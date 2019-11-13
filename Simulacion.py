@@ -363,8 +363,8 @@ class Evento:
             Simulacion.cola_eventos.push(e5)
         if Simulacion.cola_A_B.size > 0:
             llamada = Simulacion.cola_A_B.pop()
-            inicio = llamada.inicio + 0.5
-            e3 = Evento(3, inicio, llamada)
+            tiempo_arribo = llamada.tiempo_arribo + 0.5
+            e3 = Evento(3, tiempo_arribo, llamada)
             Simulacion.cola_eventos.push(e3)
 
     #E4:Termina de atenderse llamada en A
@@ -372,7 +372,7 @@ class Evento:
         Simulacion.reloj = self.inicio   
         Simulacion.ocupado_A = False
         Simulacion.cantLlamadasA_A += 1
-        duracionSistema = Simulacion.reloj - self.llamada.inicio
+        duracionSistema = Simulacion.reloj - self.llamada.tiempo_arribo
         Simulacion.duracionTotalLlamadasA_A += duracionSistema
         Simulacion.tiempoEnColaTotalA_A += self.llamada.tiempoEnCola
         if self.llamada.tipo == 2 :
@@ -380,21 +380,21 @@ class Evento:
             
         if Simulacion.cola_A.size > 0:
             llamada = Simulacion.cola_A.pop()
-            llamada.tiempoEnCola = Simulacion.reloj - llamada.inicio
+            llamada.tiempoEnCola = Simulacion.reloj - llamada.tiempo_arribo
             Simulacion.ocupado_A = True
             if llamada.tipo == 1:
                 tiempo_atencion = self.TAtencionA1()
             else:
                 tiempo_atencion = self.TAtencionA2()
-            inicio = Simulacion.reloj + tiempo_atencion
-            e4 = Evento(4, inicio, llamada)
+            tiempo_arribo = Simulacion.reloj + tiempo_atencion
+            e4 = Evento(4, tiempo_arribo, llamada)
             Simulacion.cola_eventos.push(e4)
 
     # E5: Termina de atenderse llamada en B
     def evento5(self):
         Simulacion.reloj = self.inicio
         Simulacion.ocupado_B = False
-        duracionSistema = Simulacion.reloj - self.llamada.inicio
+        duracionSistema = Simulacion.reloj - self.llamada.tiempo_arribo
         if self.llamada.tipo == 2:
             Simulacion.cantLlamadasLocalesRuteadas += 1
             if Simulacion.cola_B.size > 4 :
@@ -413,13 +413,13 @@ class Evento:
             Simulacion.tamanoPromedioB += (Simulacion.reloj - Simulacion.cola_B.ultima_modificacion) * Simulacion.cola_B.size
             Simulacion.cola_B.ultima_modificacion = Simulacion.reloj
             llamada = Simulacion.cola_B.pop()
-            llamada.tiempoEnCola = Simulacion.reloj - llamada.inicio
+            llamada.tiempoEnCola = Simulacion.reloj - llamada.tiempo_arribo
             if llamada.tipo == 1:
                 tiempo_atencion = self.TAtencionB1()
             else:
                 tiempo_atencion = self.TAtencionB2()
-            inicio = Simulacion.reloj + tiempo_atencion
-            e5 = Evento(5, inicio, llamada)
+            tiempo_arribo = Simulacion.reloj + tiempo_atencion
+            e5 = Evento(5, tiempo_arribo, llamada)
             Simulacion.cola_eventos.push(e5)
 
     #Tiempo de atención de una llamada tipo 1 en el ruteador A
