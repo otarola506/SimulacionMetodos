@@ -6,7 +6,7 @@ class Llamada:
     def __init__(self, tiempo_arribo = -1, tipo = -1, origen = -1 , tiempoEnCola = 0 ):
         self.tiempo_arribo = tiempo_arribo
         self.tipo = tipo  # tipo 1 larga distancia tipo 2 locales 
-        self.origen = origen # origen
+        self.origen = origen # origen es el lugar de donde proviene la llamada
         self.tiempoEnCola = tiempoEnCola
 
     def __str__(self):

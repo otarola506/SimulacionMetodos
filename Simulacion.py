@@ -106,7 +106,9 @@ class Simulacion:
         print("----------------------------------------------------------------------------------------\n")
         #Tamano Promedio de la cola en B 
         cls.tamanoPromedioB += (cls.reloj - cls.cola_B.ultima_modificacion) * cls.cola_B.size
-        tamanoPromedioColaB = cls.tamanoPromedioB / cls.reloj 
+        tamanoPromedioColaB = 0
+        if cls.reloj != 0:
+            tamanoPromedioColaB = cls.tamanoPromedioB / cls.reloj 
         cls.sumTamanosPromedioColaB += tamanoPromedioColaB
         print("Tamano Promedio de la cola en B: " + str(tamanoPromedioColaB))
         #Tiempo promedio de permanencia de una llamada en el sistema
